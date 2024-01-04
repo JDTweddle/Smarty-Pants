@@ -1,0 +1,34 @@
+.bounding-box {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  cursor: pointer;
+}
+
+
+.concept-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 1);
+  padding: 5px;
+  margin: 0;
+  font-size: 17px;
+  text-align: center;
+  color: #fff;
+  border-radius: 10px;
+  visibility: hidden; /* Initially hide the concept label */
+  transition: visibility 0.3s; /* Add a transition effect for smoother visibility changes */
+  opacity: 1;
+}
+
+.bounding-box:hover .concept-label {
+  visibility: visible; /* Show the concept label on hover */
+}
+
+.bounding-box:hover{
+  visibility: visible;
+  border: 1px solid
+}
