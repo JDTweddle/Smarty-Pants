@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Particles from './Components/Particles/Particles.js';
-import Clarifai from 'clarifai';
+//import Clarifai from 'clarifai';
 import Recognition from './Components/Recognition/Recognition.js';
 import './App.css';
 import Navigation from './Components/Navigation/Navigation.js';
@@ -12,20 +12,40 @@ import Rank from './Components/Rank/Rank.js';
 
 window.process = {};
 
-const app = new Clarifai.App({
-  apiKey: 'eb9dac37032d467f9b5330841b227b91'
-});
+const initialState = {
+  input: '',
+  imageUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+}
+
+
+//const app = new Clarifai.App({
+  //apiKey: 'eb9dac37032d467f9b5330841b227b91'
+//});
 
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      boxes: [],
-      concepts: [],
-      route: 'signin',
-    }
+    this.state = initialState;
+  }
+
+  loadUser = (data) => {
+    this.setState({user: {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }})
   }
 
   calculateDetectionBoxes = (data) => {
@@ -68,9 +88,34 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    app.models
-      .predict('general-image-detection', this.state.input)
-      .then((response) => {
+    //app.models
+      //.predict('general-image-detection', this.state.input)
+      //.then((response) => {
+       // if (response) {
+        fetch('http://localhost:4000/imageurl', {
+          method: 'post',
+          headers: {'Content-Type': 'application/json; charset=utf-8'},
+          body: JSON.stringify({
+            input: this.state.input
+          })
+        })
+        .then(response => response.json())
+        .then(response => {
+          if (response) {
+            fetch('http://localhost:4000/image', {
+              method: 'put',
+              headers: {'Content-Type': 'application/json; charset=utf-8'},
+              body: JSON.stringify({
+                id: this.state.user.id
+            })
+          })
+            .then(response => response.json())
+            .then(count => {
+              this.setState(Object.assign(this.state.user, {entries:count}))
+            })
+            .catch(console.log)
+
+        }
         const boxes = this.calculateDetectionBoxes(response);
         const concepts = this.extractConcepts(response);
         this.displayData(boxes, concepts);
@@ -79,32 +124,40 @@ class App extends Component {
   };
 
   onRouteChange = (route) => {
-    this.setState({ route: route});
+    if (route === 'signout') {
+      this.setState(initialState)
+    } else if (route === 'home') {
+      this.setState({isSignedIn: true})
+    }
+    this.setState({route: route});
   }
 
   render() {
-    const { concepts } = this.state;
+    const { isSignedIn, imageUrl, route, boxes, concepts } = this.state;
     return (
       <div className='App'>
         <Particles />
-        { this.state.route === 'home'
+        <Navigation 
+           isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />
+        { route === 'home'
           ? <div>
-              <Navigation 
-                onRouteChange={this.onRouteChange}/>
+              
               <Logo />
-              <Rank />
+              <Rank
+                name={this.state.user.name}
+                entries={this.state.user.entries}/>
               <ImageLinkForm
                 onInputChange={this.onInputChange}
                 onButtonSubmit={this.onButtonSubmit}/>
               <Recognition 
-                boxes={this.state.boxes} imageUrl={this.state.imageUrl} concepts={concepts} />
+                boxes={boxes} imageUrl={imageUrl} concepts={concepts} />
             </div>
           : (
           this.state.route === 'signin'
           ? <Signin 
-              onRouteChange={this.onRouteChange}/>
+              loadUser ={this.loadUser} onRouteChange={this.onRouteChange}/>
           : <Register 
-              onRouteChange={this.onRouteChange}/>
+              loadUser ={this.loadUser} onRouteChange={this.onRouteChange}/>
           )
          
         }
