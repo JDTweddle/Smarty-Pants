@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Particles from './Components/Particles/Particles.js';
-//import Clarifai from 'clarifai';
+import Clarifai from 'clarifai';
 import Recognition from './Components/Recognition/Recognition.js';
 import './App.css';
 import Navigation from './Components/Navigation/Navigation.js';
@@ -92,35 +92,36 @@ class App extends Component {
       .predict('general-image-detection', this.state.input)
       .then((response) => {
         if (response) {
-        fetch('http://localhost:4000/imageurl', {
-          method: 'post',
-          headers: {'Content-Type': 'application/json; charset=utf-8'},
-          body: JSON.stringify({
-            input: this.state.input
-          })
-        })
-        .then(response => response.json())
-        .then(response => {
-          if (response) {
-            fetch('http://localhost:4000/image', {
-              method: 'put',
-              headers: {'Content-Type': 'application/json; charset=utf-8'},
-              body: JSON.stringify({
-                id: this.state.user.id
+          fetch('http://localhost:4000/imageurl', {
+            method: 'post',
+            headers: {'Content-Type': 'application/json; charset=utf-8'},
+            body: JSON.stringify({
+              input: this.state.input
             })
           })
-            .then(response => response.json())
-            .then(count => {
-              this.setState(Object.assign(this.state.user, {entries:count}))
-            })
-            .catch(console.log)
-
+          .then(response => response.json())
+          .then(response => {
+            if (response) {
+              fetch('http://localhost:4000/image', {
+                method: 'put',
+                headers: {'Content-Type': 'application/json; charset=utf-8'},
+                body: JSON.stringify({
+                  id: this.state.user.id
+                })
+              })
+              .then(response => response.json())
+              .then(count => {
+                this.setState(Object.assign(this.state.user, {entries:count}))
+              })
+              .catch(console.log);
+            }
+            const boxes = this.calculateDetectionBoxes(response);
+            const concepts = this.extractConcepts(response);
+            this.displayData(boxes, concepts);
+          })
+          .catch((err) => console.log(err));
         }
-        const boxes = this.calculateDetectionBoxes(response);
-        const concepts = this.extractConcepts(response);
-        this.displayData(boxes, concepts);
-      })
-      .catch((err) => console.log(err));
+      });
   };
 
   onRouteChange = (route) => {
