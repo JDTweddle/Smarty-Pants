@@ -28,9 +28,9 @@ const initialState = {
 }
 
 
-//const app = new Clarifai.App({
-  //apiKey: 'eb9dac37032d467f9b5330841b227b91'
-//});
+const app = new Clarifai.App({
+  apiKey: 'eb9dac37032d467f9b5330841b227b91'
+});
 
 class App extends Component {
   constructor() {
@@ -88,10 +88,10 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    //app.models
-      //.predict('general-image-detection', this.state.input)
-      //.then((response) => {
-       // if (response) {
+    app.models
+      .predict('general-image-detection', this.state.input)
+      .then((response) => {
+        if (response) {
         fetch('http://localhost:4000/imageurl', {
           method: 'post',
           headers: {'Content-Type': 'application/json; charset=utf-8'},
