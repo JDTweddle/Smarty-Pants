@@ -9,7 +9,7 @@ class Particles extends Component {
         <div>
           <ParticlesBg 
           color="#000000" 
-          num={150} 
+          num={50} 
           type="cobweb" 
           bg={true} />
         </div>
