@@ -91,7 +91,7 @@ class App extends Component {
       .predict('general-image-detection', this.state.input)
       .then((response) => {
         if (response) {
-          fetch('http://localhost:4000/imageurl', {
+          fetch('https://smarty-pants-two.vercel.app/api/imageurl', {
             method: 'post',
             headers: {'Content-Type': 'application/json; charset=utf-8'},
             body: JSON.stringify({
@@ -101,7 +101,7 @@ class App extends Component {
           .then(response => response.json())
           .then(response => {
             if (response) {
-              fetch('http://localhost:4000/image', {
+              fetch('https://smarty-pants-two.vercel.app/api/image', {
                 method: 'put',
                 headers: {'Content-Type': 'application/json; charset=utf-8'},
                 body: JSON.stringify({

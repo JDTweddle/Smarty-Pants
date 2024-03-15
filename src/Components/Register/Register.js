@@ -23,7 +23,7 @@ class Register extends React.Component {
   }
 
   onSubmit = () => {
-    fetch('http://localhost:4000/register', {
+    fetch('https://smarty-pants-two.vercel.app/api/register', {
       method: 'post',
       headers: {'Content-Type': 'application/json; charset=utf-8'},
       body: JSON.stringify({
