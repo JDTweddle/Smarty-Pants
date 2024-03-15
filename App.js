@@ -28,14 +28,13 @@ const initialState = {
 }
 
 
-const app = new Clarifai.App({
-  apiKey: 'eb9dac37032d467f9b5330841b227b91'
-});
-
 class App extends Component {
   constructor() {
     super();
     this.state = initialState;
+    this.app = new Clarifai.App({
+      apiKey: 'eb9dac37032d467f9b5330841b227b91'
+    });
   }
 
   loadUser = (data) => {
