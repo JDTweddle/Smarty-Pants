@@ -87,7 +87,7 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    app.models
+    this.app.models
       .predict('general-image-detection', this.state.input)
       .then((response) => {
         if (response) {
